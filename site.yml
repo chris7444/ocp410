@@ -1,0 +1,4 @@
+---
+#- import_playbook: playbooks/site_preps.yml
+- import_playbook: playbooks/provision_nodes.yml
+- import_playbook: playbooks/poweron_nodes.yml

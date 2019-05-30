@@ -1,0 +1,15 @@
+cpus: 2
+ram: 8192
+disk1_size: 50
+template: clh-tpl-rhel760
+
+#
+# the following data structures are specific to VMWare VMs and are used as such by the ansible module vmware_guest 
+#
+networks:
+  - name: '{{ vm_portgroup }}'
+
+disks_specs:
+  - size_gb:  '{{ disk1_size }}'
+    type: thin
+    datastore: "{{ datastores | random }}"

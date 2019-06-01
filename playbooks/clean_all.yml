@@ -45,7 +45,6 @@
         datacenter: "{{ datacenter }}"
         folder: "{{ datacenter }}/vm/{{ cluster_name }}"
         name: "{{ inventory_hostname }}"
-        disk: "{{ disks_specs }}"
         state: absent
       vars:
         ansible_connection: local
@@ -79,7 +78,7 @@
         name: dnsmasq
         state: started
 
-- name: Stop DHCP
+    - name: Stop DHCP
       systemd:
         name: dhcpd
         state: stopped
@@ -89,7 +88,7 @@
          src: templates/dhcpd.conf.j2
          dest: /etc/dhcp/dhcpd.conf
 
-- name: Start DHCP
+    - name: Start DHCP
       systemd:
         name: dhcpd
         state: started
@@ -108,7 +107,7 @@
         password: "{{ vcenter_password }}"
         validate_certs: "{{ vcenter_validate_certs }}"
         datacenter: "{{ datacenter }}"
-        folder: "{{ datacenter }}/vm{{ template_folder }}"
+        folder: "{{ datacenter }}/vm/{{ template_folder }}"
         name: "{{ rhcos_template_name }}"
         state: absent
       vars:

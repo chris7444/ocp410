@@ -103,14 +103,45 @@
       with_items:
         - "{{ groups.dhcp }}"
 
+    - name: Stop DHCP
+      systemd:
+        name: dhcpd
+        state: stopped
+      delegate_to: "{{ item }}"
+      with_items:
+        - "{{ groups.dhcp }}"
+
+    - name: Add DHCP static entry with assigned MAC address
+      blockinfile:
+         path: /etc/dhcp/dhcpd.conf
+         block: |
+           host {{ inventory_hostname }} {
+           	hardware ethernet {{ macaddress }};
+           	fixed-address {{ ip_addr }};
+           	option host-name "{{ inventory_hostname }}";
+           }
+         marker: ""
+      delegate_to: "{{ item }}"
+      with_items:
+        - "{{ groups.dhcp }}"
+
+    - name: Start DHCP
+      systemd:
+        name: dhcpd
+        state: started
+      delegate_to: "{{ item }}"
+      with_items:
+        - "{{ groups.dhcp }}"
+
   handlers:
 
     - name: restart_dnsmasq
       systemd:
         state: restarted
         name: dnsmasq
-      delegate_to: clh-infra
-
+      delegate_to: "{{ item }}"
+      with_items:
+        - "{{ groups.dhcp }}"
 
 
 #######################################################################
@@ -143,6 +174,7 @@
           memory_mb: "{{ ram }}"
           num_cpus: "{{ cpus }}"
       register: res
+      notify: CreateVMsWait
 
     - set_fact:
         macaddress: "{{ res.instance.hw_eth0.macaddress }}"
@@ -161,3 +193,9 @@
       systemd:
         name: haproxy
         state: restarted
+
+    - name: CreateVMsWait
+      wait_for_connection:
+        delay: 5
+        sleep: 15
+        timeout: 900

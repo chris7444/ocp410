@@ -58,6 +58,7 @@
       with_items: 
         - "{{ groups.dhcp }}"
 
+
 - hosts: dhcp
   name: Reset DHCP
   gather_facts: false
@@ -67,14 +68,32 @@
       systemd:
         name: dnsmasq
         state: stopped
+
     - name: Delete old leases
       file:
         name: /var/lib/dnsmasq/dnsmasq.leases
         state: absent
+
     - name: Start DNSMASQ
       systemd:
         name: dnsmasq
         state: started
+
+- name: Stop DHCP
+      systemd:
+        name: dhcpd
+        state: stopped
+
+    - name: Return DHCP configuration to default
+      template:
+         src: templates/dhcpd.conf.j2
+         dest: /etc/dhcp/dhcpd.conf
+
+- name: Start DHCP
+      systemd:
+        name: dhcpd
+        state: started
+
 
 # voluntarily neutralized
 - hosts: localhost:!localhost
@@ -94,4 +113,3 @@
         state: absent
       vars:
         ansible_connection: local
-

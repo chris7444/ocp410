@@ -1,3 +1,5 @@
 hosts
 ansible.log
 .vault_pass
+group_vars/all/vars
+group_vars/all/vault

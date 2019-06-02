@@ -32,7 +32,7 @@
         ignition_data: "{{ lookup('file', ignition_file) }}"
 
 #
-# Create the VM in two setps to work around issue 55551 https://github.com/ansible/ansible/issues/55551
+# Create the VM in two steps to work around issue 55551 https://github.com/ansible/ansible/issues/55551
 # also changing the network connectivity seems to break things (etcd cluster does not start)
 #
     - name: Create OCP VMs
@@ -103,32 +103,29 @@
       with_items:
         - "{{ groups.dhcp }}"
 
-    - name: Stop DHCP
-      systemd:
-        name: dhcpd
-        state: stopped
+    - name: Remove any existing DHCP entry for host
+      replace:
+        path: /etc/dhcp/dhcpd.conf
+        regexp: |
+          host {{ inventory_hostname }} {
+          ^(.+)$
+          ^(.+)$
+          ^(.+)$
+          }
       delegate_to: "{{ item }}"
       with_items:
         - "{{ groups.dhcp }}"
 
     - name: Add DHCP static entry with assigned MAC address
       blockinfile:
-         path: /etc/dhcp/dhcpd.conf
-         block: |
-           host {{ inventory_hostname }} {
-           	hardware ethernet {{ macaddress }};
-           	fixed-address {{ ip_addr }};
-           	option host-name "{{ inventory_hostname }}";
-           }
-         marker: ""
-      delegate_to: "{{ item }}"
-      with_items:
-        - "{{ groups.dhcp }}"
-
-    - name: Start DHCP
-      systemd:
-        name: dhcpd
-        state: started
+        path: /etc/dhcp/dhcpd.conf
+        block: |
+          host {{ inventory_hostname }} {
+          	hardware ethernet {{ macaddress }};
+          	fixed-address {{ ip_addr }};
+          	option host-name "{{ inventory_hostname }}";
+          }
+        marker: ""
       delegate_to: "{{ item }}"
       with_items:
         - "{{ groups.dhcp }}"
@@ -146,7 +143,24 @@
 
 #######################################################################
 #
-# Play 2: Load Balancers
+# Play 2: Restart DHCP Server
+#
+#######################################################################
+- hosts: dhcp
+  name: Restart DHCP Server
+  gather_facts: false
+
+  tasks:
+
+    - name: Restart DHCP Service
+      systemd:
+        name: dhcpd
+        state: restarted
+
+
+#######################################################################
+#
+# Play 3: Load Balancers
 #
 #######################################################################
 - name: Deploy openshift nodes

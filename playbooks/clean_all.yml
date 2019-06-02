@@ -57,6 +57,19 @@
       with_items: 
         - "{{ groups.dhcp }}"
 
+    - name: Remove any existing DHCP entry for host
+      replace:
+        path: /etc/dhcp/dhcpd.conf
+        regexp: |
+          host {{ inventory_hostname }} {
+          ^(.+)$
+          ^(.+)$
+          ^(.+)$
+          }
+      delegate_to: "{{ item }}"
+      with_items:
+        - "{{ groups.dhcp }}"
+
 
 - hosts: dhcp
   name: Reset DHCP
@@ -82,11 +95,6 @@
       systemd:
         name: dhcpd
         state: stopped
-
-    - name: Return DHCP configuration to default
-      template:
-         src: templates/dhcpd.conf.j2
-         dest: /etc/dhcp/dhcpd.conf
 
     - name: Start DHCP
       systemd:

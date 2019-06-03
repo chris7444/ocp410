@@ -62,6 +62,5 @@
         networks: '{"VM Network":"{{ vm_portgroup }}"}'
         name: "{{ rhcos_template_name }}"
         power_on: no
-      register: res
-
+        allow_duplicates: no
 

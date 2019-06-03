@@ -45,7 +45,6 @@
         datacenter: "{{ datacenter }}"
         folder: "{{ datacenter }}/vm/{{ cluster_name }}"
         name: "{{ inventory_hostname }}"
-        disk: "{{ disks_specs }}"
         state: absent
       vars:
         ansible_connection: local
@@ -58,6 +57,20 @@
       with_items: 
         - "{{ groups.dhcp }}"
 
+    - name: Remove any existing DHCP entry for host
+      replace:
+        path: /etc/dhcp/dhcpd.conf
+        regexp: |
+          host {{ inventory_hostname }} {
+          ^(.+)$
+          ^(.+)$
+          ^(.+)$
+          }
+      delegate_to: "{{ item }}"
+      with_items:
+        - "{{ groups.dhcp }}"
+
+
 - hosts: dhcp
   name: Reset DHCP
   gather_facts: false
@@ -67,14 +80,27 @@
       systemd:
         name: dnsmasq
         state: stopped
+
     - name: Delete old leases
       file:
         name: /var/lib/dnsmasq/dnsmasq.leases
         state: absent
+
     - name: Start DNSMASQ
       systemd:
         name: dnsmasq
         state: started
+
+    - name: Stop DHCP
+      systemd:
+        name: dhcpd
+        state: stopped
+
+    - name: Start DHCP
+      systemd:
+        name: dhcpd
+        state: started
+
 
 # voluntarily neutralized
 - hosts: localhost:!localhost
@@ -89,9 +115,8 @@
         password: "{{ vcenter_password }}"
         validate_certs: "{{ vcenter_validate_certs }}"
         datacenter: "{{ datacenter }}"
-        folder: "{{ datacenter }}/vm{{ template_folder }}"
+        folder: "{{ datacenter }}/vm/{{ template_folder }}"
         name: "{{ rhcos_template_name }}"
         state: absent
       vars:
         ansible_connection: local
-

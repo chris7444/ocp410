@@ -1,3 +1,8 @@
 hosts
 ansible.log
 .vault_pass
+install/ori/password
+install/ori/install-config*.yaml
+install/ori/*.ova
+install/ins/*
+group_vars/all/vault.yml

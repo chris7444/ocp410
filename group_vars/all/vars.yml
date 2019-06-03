@@ -24,4 +24,3 @@ vcenter_cluster: Docker
 datacenter: DEVOPS
 ntp_servers: ['10.12.2.1']
 dns_servers: ['10.10.173.1','10.10.173.31']
-

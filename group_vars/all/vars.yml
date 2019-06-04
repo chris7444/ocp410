@@ -2,15 +2,15 @@
 # You need to change the following entries to reflect your environment
 #
 install_dir: /root/install/ins
-coreos_ova_path: "{{ install_dir }}/rhcos-410.8.20190516.0-vmware.ova"	# location of the RH CoreOS OVA
-rhcos_template_name: clh-rhcos						# name we give to the VM when we deploy the RH CoreOS OVA
-template_folder: 'clhtemplate'						# Folder where we  store the RH coreOS template
+coreos_ova_path: "/root/rhcos-410.8.20190516.0-vmware.ova"		# location of the RH CoreOS OVA
+infra_folder: 'clhinfra'						# Folder where we create non-OCP VMs and templates
+template: clh-rhcos							# VMWare Template to use when provisioning OCP machines
 datastores: ['Docker_CLH']						# where to store the VMs
 cluster_name: clh							# Name of the K*S Cluster
 
 vm_portgroup: clhVLAN							# portgroup that the VMS connect to
-dhcp_scope: '10.15.152.202,10.15.152.254'				# We deploy a DHCP service on the vm_protgroup VLAN, here is the scope assigned to DHC
-infra_ip: 10.15.152.4							# DNS node 
+dhcp_scope: '10.15.152.201 10.15.152.254'				# We deploy a DHCP service on the vm_protgroup VLAN, here is the scope assigned to DHC
+dhcp_subnet: 10.15.152.0/24						# subnet to use by DHCP
 gateway: '10.15.152.1'							# gateway on the vm_portgroup subnet 
 domain_name: hpecloud.org						# 
 resource_plane_vip: 10.15.152.5						# this is the IP of your load balancer
@@ -24,3 +24,10 @@ vcenter_cluster: Docker
 datacenter: DEVOPS
 ntp_servers: ['10.12.2.1']
 dns_servers: ['10.10.173.1','10.10.173.31']
+
+#
+# temporary settings
+#
+external_lb_vip: "{{ hostvars[groups.loadbalancer.0].ip_addr }}"	# no vip implemented yet
+internal_lb_vip: "{{ hostvars[groups.loadbalancer.0].ip_addr }}"	# no vip implemented yet
+web_server_ip: 10.15.152.7						# IP of server with the bootstrap.ign file

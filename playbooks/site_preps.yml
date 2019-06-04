@@ -32,7 +32,7 @@
         password: "{{ vcenter_password }}"
         validate_certs: "{{ vcenter_validate_certs }}"
         datacenter: "{{ datacenter }}"
-        folder_name: "{{ template_folder }}"
+        folder_name: "{{ infra_folder }}"
         folder_type: vm
         state: present
 
@@ -56,11 +56,12 @@
         ova: "{{ coreos_ova_path }}"
         cluster: "{{ vcenter_cluster }}"
         datacenter: "{{ datacenter }}"
-        folder: "{{ datacenter }}/vm/{{ template_folder }}"
+        folder: "{{ datacenter }}/vm/{{ infra_folder }}"
         datastore: "{{ datastores | random }}"
         disk_provisioning: thin
         networks: '{"VM Network":"{{ vm_portgroup }}"}'
-        name: "{{ rhcos_template_name }}"
+        name: "{{ template }}"
         power_on: no
         allow_duplicates: no
+      register: res
 

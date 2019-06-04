@@ -4,7 +4,6 @@ disk1_size: '120'				# disk size in GBs
 ignition_file: '{{ install_dir }}/worker.64'	# location of the ignition data
 initial_port_check: 22                  	# this is the SSH port,
 initial_port_check_timeout: 10 			# maximum number of seconds waiting for port 22 to be open. d$Capped by timeout_waiting_for_k8s_api
-
 customvalues:
   - key: disk.EnableUUID
     value: "TRUE"

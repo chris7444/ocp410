@@ -1,0 +1,20 @@
+cpus: '2'						# number of vCPUs
+ram: '4096'						# RAM size in MBs
+disk1_size: '60'					# disk size in Gbs
+template: clh-tpl-rhel760				# VMware template to use when provisioning infra machines (override the default CoreOS template)
+
+customvalues:
+  - key: HPE
+    value: "Christophe Lehy"
+
+networks:
+  - name:  '{{ vm_portgroup }}'
+    ip:  "{{ ip_addr | ipaddr('address') }}"
+    netmask: "{{ ip_addr | ipaddr('netmask') }}"
+    gateway: "{{ gateway }}"
+
+  
+disks_specs:
+  - size_gb:  '{{ disk1_size }}'
+    type: thin
+    datastore: "{{ datastores | random }}"

@@ -14,7 +14,7 @@
 # limitations under the License.
 ### 
 ---
-- hosts: ocp_vms
+- hosts: ocp
   name: Delete OCP VMs
   gather_facts: false
   connection: local
@@ -49,63 +49,9 @@
       vars:
         ansible_connection: local
 
-    - name: remove fixed leases from DHCP
-      delegate_to: "{{ item }}"
-      file:
-        name: /etc/dnsmasq.d/{{ inventory_hostname }}.conf
-        state: absent
-      with_items: 
-        - "{{ groups.dhcp }}"
-
-    - name: Remove any existing DHCP entry for host
-      replace:
-        path: /etc/dhcp/dhcpd.conf
-        regexp: |
-          host {{ inventory_hostname }} {
-          ^(.+)$
-          ^(.+)$
-          ^(.+)$
-          }
-      delegate_to: "{{ item }}"
-      with_items:
-        - "{{ groups.dhcp }}"
-
-
-- hosts: dhcp
-  name: Reset DHCP
-  gather_facts: false
-
-  tasks:
-    - name: Stop DNSMASQ
-      systemd:
-        name: dnsmasq
-        state: stopped
-
-    - name: Delete old leases
-      file:
-        name: /var/lib/dnsmasq/dnsmasq.leases
-        state: absent
-
-    - name: Start DNSMASQ
-      systemd:
-        name: dnsmasq
-        state: started
-
-    - name: Stop DHCP
-      systemd:
-        name: dhcpd
-        state: stopped
-
-    - name: Start DHCP
-      systemd:
-        name: dhcpd
-        state: started
-
-
 # voluntarily neutralized
 - hosts: localhost:!localhost
   name: Delete Template
-  gather_facts: false
 
   tasks:
     - name: Delete RH CoreOS template
@@ -115,8 +61,39 @@
         password: "{{ vcenter_password }}"
         validate_certs: "{{ vcenter_validate_certs }}"
         datacenter: "{{ datacenter }}"
-        folder: "{{ datacenter }}/vm/{{ template_folder }}"
-        name: "{{ rhcos_template_name }}"
+        folder: "{{ datacenter }}/vm/{{ infra_folder }}"
+        name: "{{ template }}"
         state: absent
       vars:
         ansible_connection: local
+
+- hosts: infrastructure:loadbalancer
+  name: Delete Infrastructure nodes
+  gather_facts: no
+
+  tasks:
+    - name: Power off Infra VMs
+      delegate_to: localhost
+      vmware_guest:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: "{{ vcenter_validate_certs }}"
+        datacenter: "{{ datacenter }}"
+        folder: "{{ datacenter }}/vm/{{ cluster_name }}"
+        name: "{{ inventory_hostname }}"
+        state: poweredoff
+      failed_when: false
+
+    - name: Delete Infrastructure Node
+      delegate_to: localhost
+      vmware_guest:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: "{{ vcenter_validate_certs }}"
+        datacenter: "{{ datacenter }}"
+        folder: "{{ datacenter }}/vm/{{ infra_folder }}"
+        name: "{{ inventory_hostname  }}"
+        state: absent
+

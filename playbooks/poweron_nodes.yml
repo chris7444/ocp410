@@ -16,11 +16,11 @@
 ---
 #######################################################################
 #
-# Play 1: OCP nodes
+# Play 1: Power on OCP nodes
 #
 #######################################################################
 - name: Deploy openshift nodes
-  hosts: ocp_vms
+  hosts: ocp
   gather_facts: false
 
   tasks:

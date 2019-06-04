@@ -28,6 +28,7 @@ dns_servers: ['10.10.173.1','10.10.173.31']
 #
 # temporary settings
 #
-external_lb_vip: "{{ hostvars[groups.loadbalancer.0].ip_addr }}"	# no vip implemented yet
-internal_lb_vip: "{{ hostvars[groups.loadbalancer.0].ip_addr }}"	# no vip implemented yet
+external_lb_vip: "{{ hostvars[groups.loadbalancer.0].ansible_host }}"	# no vip implemented yet
+internal_lb_vip: "{{ hostvars[groups.loadbalancer.0].ansible_host }}"	# no vip implemented yet
 web_server_ip: 10.15.152.7						# IP of server with the bootstrap.ign file
+short_name_of_web_server: clh-fedora					# name of the web server hosting bootstrap.ign as it appear in your append-bootstrap.ign file

@@ -63,7 +63,7 @@
       block: |
         host {{ item.instance.hw_name }} {
            hardware ethernet {{ item.instance.hw_eth0.macaddress }};
-           fixed-address {{ hostvars[item.instance.hw_name].ip_addr | ipaddr('address') }};
+           fixed-address {{ hostvars[item.instance.hw_name].ansible_host }};
            option host-name "{{ item.instance.hw_name }}";
         }
       marker: ""

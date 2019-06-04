@@ -8,8 +8,8 @@ template: clh-tpl-rhel760
 #
 networks:
   - name: '{{ vm_portgroup }}'
-    ip:  "{{ ip_addr | ipaddr('address') }}"
-    netmask: "{{ ip_addr | ipaddr('netmask') }}"
+    ip:  "{{ ansible_host }}"
+    netmask: "{{ dhcp_subnet | ipaddr('netmask') }}"
     gateway: "{{ gateway }}"
 
 disks_specs:

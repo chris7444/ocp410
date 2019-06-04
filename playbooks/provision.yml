@@ -87,7 +87,7 @@
   tasks:
 
   - set_fact:
-      internal_dns_servers: "{{ groups['infrastructure'] | map('extract', hostvars, ['ip_addr']) | list }}"
+      internal_dns_servers: "{{ groups['infrastructure'] | map('extract', hostvars, ['ansible_host']) | list }}"
 
   - name: Create VMs
     delegate_to: localhost
@@ -148,7 +148,7 @@
   tasks:
 
   - set_fact:
-      internal_dns_servers: "{{ groups['infrastructure'] | map('extract', hostvars, ['ip_addr']) | list }}"
+      internal_dns_servers: "{{ groups['infrastructure'] | map('extract', hostvars, ['ansible_host']) | list }}"
 
 #
 # cannot create the VM in one shot due to an issue with ansible 2.8
@@ -175,10 +175,10 @@
         memory_mb: "{{ ram }}"
         num_cpus: "{{ cpus }}"
     vars:
-      dns_list: "{% for host in groups.infrastructure %}{% if loop.index != 1 %},{% endif %}{{ hostvars[host].ip_addr }}{% endfor %}"
+      dns_list: "{% for host in groups.infrastructure %}{% if loop.index != 1 %},{% endif %}{{ hostvars[host].ansible_host }}{% endfor %}"
 
   - debug:
-      msg: "{% for host in groups.infrastructure %}{% if loop.index != 1 %},{% endif %}{{ hostvars[host].ip_addr }}{% endfor %}"
+      msg: "{% for host in groups.infrastructure %}{% if loop.index != 1 %},{% endif %}{{ hostvars[host].ansible_host }}{% endfor %}"
  
 #
 # Second step is to adjust the size of the disk (bug with ansible 2.8)

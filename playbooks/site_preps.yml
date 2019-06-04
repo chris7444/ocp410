@@ -65,3 +65,8 @@
         allow_duplicates: no
       register: res
 
+    - name: Populate /etc/hosts
+      template:
+        src: templates/hosts.j2
+        dest: /etc/hosts
+

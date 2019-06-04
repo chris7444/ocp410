@@ -1,16 +1,18 @@
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
 
-{{ external_lb_vip }} api
-{{ internal_lb_vip }} api-int
-{{ web_server_ip }} clh-fedora
+{{ external_lb_vip | ipaddr('address') }} api
+{{ internal_lb_vip | ipaddr('address') }} api-int
+{{ web_server_ip }} {{ short_name_of_web_server }}
 
 {% for host in groups.loadbalancer %}
-{{ hostvars[host].ip_addr }} {{ host }}
+{{ hostvars[host].ansible_host }} {{ host }}
 {% endfor %}
-{% for host in groups.ocp %}
-{{ hostvars[host].ip_addr }} {{ host }}
-{% endfor %}
+
 {% for host in groups.infrastructure %}
-{{ hostvars[host].ip_addr }} {{ host }}
+{{ hostvars[host].ansible_host }} {{ host }}
+{% endfor %}
+
+{% for host in groups.ocp %}
+{{ hostvars[host].ansible_host }} {{ host }}
 {% endfor %}

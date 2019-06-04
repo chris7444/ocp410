@@ -31,10 +31,10 @@ backend openshift-api-server
     balance source
     mode tcp
 {% for host in groups['bootstrap'] %}
-    server bootstrap{{ loop.index - 1 }}.{{ cluster_name }} {{ hostvars[host].ip_addr }}:6443 check
+    server bootstrap{{ loop.index - 1 }}.{{ cluster_name }} {{ hostvars[host].ansible_host }}:6443 check
 {% endfor %}
 {% for host in groups['master'] %}
-    server master{{ loop.index - 1 }}.{{ cluster_name }} {{ hostvars[host].ip_addr }}:6443 check
+    server master{{ loop.index - 1 }}.{{ cluster_name }} {{ hostvars[host].ansible_host }}:6443 check
 {% endfor %}
 
 frontend machine-config-server
@@ -47,10 +47,10 @@ backend machine-config-server
     balance source
     mode tcp
 {% for host in groups['bootstrap'] %}
-    server bootstrap{{ loop.index - 1 }}.{{ cluster_name }} {{ hostvars[host].ip_addr }}:22623 check
+    server bootstrap{{ loop.index - 1 }}.{{ cluster_name }} {{ hostvars[host].ansible_host }}:22623 check
 {% endfor %}
 {% for host in groups['master'] %}
-    server master{{ loop.index - 1 }}.{{ cluster_name }} {{ hostvars[host].ip_addr }}:22623 check
+    server master{{ loop.index - 1 }}.{{ cluster_name }} {{ hostvars[host].ansible_host }}:22623 check
 {% endfor %}
   
 frontend ingress-http
@@ -63,7 +63,7 @@ backend ingress-http
     balance source
     mode tcp
 {% for host in groups['worker'] %}
-    server worker{{ loop.index  - 1 }}.{{ cluster_name }} {{ hostvars[host].ip_addr }}:80 check
+    server worker{{ loop.index  - 1 }}.{{ cluster_name }} {{ hostvars[host].ansible_host }}:80 check
 {% endfor %}
    
 frontend ingress-https
@@ -76,6 +76,6 @@ backend ingress-https
     balance source
     mode tcp
 {% for host in groups['worker'] %}
-    server worker{{ loop.index  - 1 }}.{{ cluster_name }} {{ hostvars[host].ip_addr }}:443 check
+    server worker{{ loop.index  - 1 }}.{{ cluster_name }} {{ hostvars[host].ansible_host }}:443 check
 {% endfor %}
 
